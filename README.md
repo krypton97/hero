@@ -76,8 +76,8 @@ And assumes that they are all under `$GOPATH/src/app/template`
     </head>
 
     <body>
-        <%@ body { %>
-        <% } %>
+        {{@ body { }}
+        {{ } }}
     </body>
 </html>
 ```
@@ -85,24 +85,24 @@ And assumes that they are all under `$GOPATH/src/app/template`
 ### userlist.html
 
 ```html
-<%: func UserList(userList []string, buffer *bytes.Buffer) %>
+{{: func UserList(userList []string, buffer *bytes.Buffer) }}
 
-<%~ "index.html" %>
+{{~ "index.html" }}
 
-<%@ body { %>
-    <% for _, user := range userList { %>
+{{@ body { }}
+    {{ for _, user := range userList { }}
         <ul>
-            <%+ "user.html" %>
+            {{+ "user.html" }}
         </ul>
-    <% } %>
-<% } %>
+    {{ } }}
+{{ } }}
 ```
 
 ### user.html
 
 ```html
 <li>
-    <%= user %>
+    {{= user }}
 </li>
 ```
 
@@ -153,28 +153,28 @@ At last, start the server and visit `http://localhost:8080/users` in your browse
 
 There are only nine necessary kinds of statements, which are:
 
-- Function Definition `<%: func define %>`
+- Function Definition `{{: func define }}`
   - Function definition statement defines the function which represents a html file.
   - The function defined should contains a parameter `buffer *bytes.Buffer`.
-  - Example:`<%: func UserList(userList []string, buffer *bytes.Buffer) %>`, which we have mentioned in quick start.
+  - Example:`{{: func UserList(userList []string, buffer *bytes.Buffer) }}`, which we have mentioned in quick start.
 
-- Extend `<%~ "parent template" %>`
+- Extend `{{~ "parent template" }}`
   - Extend statement states the parent template the current template extends.
   - The parent template should be quoted with `""`.
-  - Example: `<%~ "index.html" >`, which we have mentioned in quick start, too.
+  - Example: `{{~ "index.html" >`, which we have mentioned in quick start, too.
 
-- Include `<%+ "sub template" %>`
+- Include `{{+ "sub template" }}`
   - Include statement includes a sub-template to the current template. It works like `#include` in `C++`.
   - The sub-template should be quoted with `""`.
-  - Example: `<%+ "user.html" >`, which we also have mentioned in quick start.
+  - Example: `{{+ "user.html" >`, which we also have mentioned in quick start.
 
-- Import `<%! go code %>`
+- Import `{{! go code }}`
   - Import statement imports the packages used in the defined function, and it also contains everything that is outside of the defined function.
   - Import statement will NOT be inherited by child template.
   - Example:
 
     ```go
-    <%!
+    {{!
     	import (
           	"fmt"
         	"strings"
@@ -195,10 +195,10 @@ There are only nine necessary kinds of statements, which are:
     	func (s S) String() string {
         	return s.Name
     	}
-    %>
+    }}
     ```
 
-- Block `<%@ blockName { %> <% } %>`
+- Block `{{@ blockName { }} {{ } }}`
 
   - Block statement represents a block. Child template overwrites blocks to extend parent template.
 
@@ -212,32 +212,32 @@ There are only nine necessary kinds of statements, which are:
         </head>
 
         <body>
-            <%@ body { %>
-            <% } %>
+            {{@ body { }}
+            {{ } }}
         </body>
     </html>
     ```
 
-- Code `<% go code %>`
+- Code `{{ go code }}`
 
   - Code statement states all code inside the defined function. It's just go code.
 
   - Example:
 
     ```go
-    <% for _, user := userList { %>
-        <% if user != "Alice" { %>
-        	<%= user %>
-        <% } %>
-    <% } %>
+    {{ for _, user := userList { }}
+        {{ if user != "Alice" { }}
+        	{{= user }}
+        {{ } }}
+    {{ } }}
 
-    <%
+    {{
     	a, b := 1, 2
     	c := Add(a, b)
-    %>
+    }}
     ```
 
-- Raw Value `<%==[t] variable %>`
+- Raw Value `{{==[t] variable }}`
 
   - Raw Value statement will convert the variable to string.
   - `t` is the type of variable, hero will find suitable converting method by `t`. Candidates of `t` are:
@@ -255,26 +255,26 @@ There are only nine necessary kinds of statements, which are:
   - Example:
 
     ```go
-    <%== "hello" %>
-    <%==i 34  %>
-    <%==u Add(a, b) %>
-    <%==s user.Name %>
+    {{== "hello" }}
+    {{==i 34  }}
+    {{==u Add(a, b) }}
+    {{==s user.Name }}
     ```
 
-- Escaped Value `<%=[t] variable %>`
+- Escaped Value `{{=[t] variable }}`
 
   - Escaped Value statement is similar with Raw Value statement, but after converting, it will escaped it with `html.EscapesString`.
   - `t` is the same with that of `Raw Value Statement`.
   - Example:
 
     ```go
-    <%= a %>
-    <%=i a + b %>
-    <%=u Add(a, b) %>
-    <%=bs []byte{1, 2} %>
+    {{= a }}
+    {{=i a + b }}
+    {{=u Add(a, b) }}
+    {{=bs []byte{1, 2} }}
     ```
 
-- Note `<%# note %>`
+- Note `{{# note }}`
 
   - Note statement add notes to the template.
   - It will not be added to the generated go source.
