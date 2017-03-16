@@ -60,8 +60,8 @@ var prefixTypeMap = map[byte]uint8{
 }
 
 var (
-	openTag           = []byte{LT, Percent}                           // <%
-	closeTag          = []byte{Percent, GT}                           // %>
+	openTag           = []byte{OpenBrace, OpenBrace}                  // {{
+	closeTag          = []byte{CloseBrace, CloseBrace}                // }}
 	openBraceTag      = []byte{OpenBrace}                             // {
 	closeBraceTag     = []byte{CloseBrace}                            // }
 	byteSliceTag      = []byte{91, 93, 98, 121, 116, 101}             // []byte
